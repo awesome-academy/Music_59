@@ -3,17 +3,17 @@
     package="com.example.dung.music_59">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
+        android:name=".service.AppController"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.playmusic.PlayMusicActivity"/>
+        <activity android:name=".ui.playmusic.PlayMusicActivity" />
         <activity android:name=".ui.genres.GenresActivity" />
         <activity android:name=".ui.home.MainActivity">
             <intent-filter>
@@ -22,7 +22,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".service.MusicService"/>
+
+        <service android:name=".service.MusicService" />
     </application>
 
 </manifest>

@@ -23,4 +23,5 @@ public interface TrackDataSource {
     interface Remote {
         void getTrackByGenre(String url, onGetTrackCallBack callBack);
     }
+
 }

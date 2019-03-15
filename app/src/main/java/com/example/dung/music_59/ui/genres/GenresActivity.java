@@ -1,8 +1,11 @@
 package com.example.dung.music_59.ui.genres;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -14,6 +17,7 @@ import com.example.dung.music_59.data.model.Track;
 import com.example.dung.music_59.data.source.TrackRepository;
 import com.example.dung.music_59.data.source.local.TrackLocalDataSource;
 import com.example.dung.music_59.data.source.remote.TrackRemoteDataSource;
+import com.example.dung.music_59.service.MusicService;
 import com.example.dung.music_59.ui.adapter.TracksAdapter;
 import com.example.dung.music_59.ui.playmusic.PlayMusicActivity;
 
@@ -24,13 +28,18 @@ public class GenresActivity extends AppCompatActivity
         implements TracksAdapter.onClickTrackListener, GenresContract.View {
     private static final String BUNDLE_GRENRE = "BUNDLE_GRENRE";
     private static final String EXTRA_BUNDLE = "EXTRA_BUNDLE";
+    public static MusicService sMusicService;
+
     private ImageView mImageGenre;
     private RecyclerView mRecyclerTrack;
     private TracksAdapter mTracksAdapter;
     private List<Track> mTracks;
     private GenresContract.Presenter mPresenter;
-    private TrackRepository mRepository;
     private Genre mGenre;
+    private Track mTrack;
+    private Intent mPlayIntent;
+    private boolean mISBound;
+    private ServiceConnection mServiceConnection;
 
     public static Intent getIntent(Context context, Genre genre) {
         Intent intent = new Intent(context, GenresActivity.class);
@@ -43,11 +52,41 @@ public class GenresActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_genres);
         getBundle();
+        setContentView(R.layout.activity_genres);
+        boundService();
         initView();
         setToolbar();
         mPresenter.loadTracksByGenres(mGenre);
+    }
+
+    private void boundService() {
+        mServiceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                MusicService.MusicBinder binder = (MusicService.MusicBinder) iBinder;
+                if (sMusicService == null) {
+                    sMusicService = binder.getService();
+                }
+                mISBound = true;
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                mISBound = false;
+            }
+        };
+        if (mPlayIntent == null) {
+            mPlayIntent = new Intent(GenresActivity.this, MusicService.class);
+            bindService(mPlayIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
+            startService(mPlayIntent);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(mServiceConnection);
     }
 
     @Override
@@ -77,14 +116,19 @@ public class GenresActivity extends AppCompatActivity
         mTracksAdapter = new TracksAdapter(getApplicationContext(), mTracks);
         mRecyclerTrack.setAdapter(mTracksAdapter);
         mTracksAdapter.setTrackListener(this);
-        mRepository = TrackRepository.getInstance(TrackLocalDataSource.getInstance(getApplicationContext()),
-                TrackRemoteDataSource.getInstance(getApplicationContext()));
-        mPresenter = new GenresPresenter(this, mRepository);
+        mPresenter = new GenresPresenter(this,
+                TrackRepository.getInstance(TrackLocalDataSource.getInstance(getApplicationContext()),
+                        TrackRemoteDataSource.getInstance(getApplicationContext())));
     }
 
     @Override
     public void onTrackClick(Track track) {
-        startActivity(PlayMusicActivity.getIntent(getApplicationContext(), track, mTracks));
+        if (sMusicService != null) {
+            sMusicService.setTrackList(mTracks);
+            int pos = sMusicService.getTrackPosition(track);
+            sMusicService.setTrack(pos);
+            startActivity(PlayMusicActivity.getIntent(getApplicationContext()));
+        }
     }
 
     @Override

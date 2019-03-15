@@ -12,29 +12,49 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class MediaManager implements IMediaPlayer {
+public class MediaManager implements IMediaPlayer, MediaPlayer.OnCompletionListener,
+        MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener {
     private static MediaManager sInstance;
     private List<Track> mTracks;
     private MediaPlayer mMediaPlayer;
     private int mTrackPosition;
-    private MusicService mMusicService;
     private boolean mIsRestartNotifi;
     private boolean mIsShuffle;
     private boolean mIsRepeat;
-    private OnFailure mFailure;
+    private OnFailure mLoadFail;
+    private OnShowNotifi mOnShowNotifi;
 
-    public MediaManager(MusicService musicService) {
-        mMusicService = musicService;
+    private MediaManager(OnShowNotifi onShowNotifi) {
         mTracks = new ArrayList<>();
         mMediaPlayer = new MediaPlayer();
+        mOnShowNotifi = onShowNotifi;
+    }
+
+    private MediaManager() {
 
     }
 
-    public static MediaManager getInstance(MusicService musicService) {
+    public static MediaManager getInstance(OnShowNotifi onShowNotifi) {
         if (sInstance == null) {
-            sInstance = new MediaManager(musicService);
+            sInstance = new MediaManager(onShowNotifi);
         }
         return sInstance;
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mediaPlayer) {
+        nextTrack();
+    }
+
+    @Override
+    public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
+        return false;
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mediaPlayer) {
+        mediaPlayer.start();
+        mOnShowNotifi.onShowNotifi();
     }
 
     @Override
@@ -42,14 +62,13 @@ public class MediaManager implements IMediaPlayer {
         mMediaPlayer.reset();
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
-            mMediaPlayer.setDataSource(mMusicService, Uri.parse(mTracks.get(mTrackPosition).getStreamUrl()));
-            mMediaPlayer.setOnErrorListener(mMusicService);
-            mMediaPlayer.setOnCompletionListener(mMusicService);
-            mMediaPlayer.setOnPreparedListener(mMusicService);
+            mMediaPlayer.setDataSource(String.valueOf(Uri.parse(mTracks.get(mTrackPosition).getStreamUrl())));
+            mMediaPlayer.setOnErrorListener(this);
+            mMediaPlayer.setOnCompletionListener(this);
+            mMediaPlayer.setOnPreparedListener(this);
             mMediaPlayer.prepareAsync();
-
         } catch (IOException e) {
-            mFailure.onLoadFail(e.getMessage());
+            mLoadFail.onLoadFail(e.getMessage());
         }
     }
 
@@ -67,7 +86,9 @@ public class MediaManager implements IMediaPlayer {
 
     @Override
     public void next() {
-        if (mIsShuffle) {
+        if (mIsRepeat) {
+
+        } else if (mIsShuffle) {
             shuffle();
         } else {
             nextTrack();
@@ -98,11 +119,8 @@ public class MediaManager implements IMediaPlayer {
 
     @Override
     public void play() {
-        if (mMediaPlayer.isPlaying() == false) {
+        if (!mMediaPlayer.isPlaying()) {
             mMediaPlayer.start();
-            if (mIsRestartNotifi) {
-
-            }
         }
     }
 
@@ -149,7 +167,14 @@ public class MediaManager implements IMediaPlayer {
     }
 
     @Override
-    public int getTrackPosition() {
+    public int getTrackPosition(Track track) {
+        int pos = 0;
+        for (int i = 0; i < mTracks.size(); i++) {
+            if (track.getId() == mTracks.get(i).getId()) {
+                pos = i;
+            }
+        }
+        mTrackPosition = pos;
         return mTrackPosition;
     }
 
@@ -160,7 +185,7 @@ public class MediaManager implements IMediaPlayer {
 
     @Override
     public int getTrackDuaration() {
-        return 0;
+        return mMediaPlayer.getDuration();
     }
 
     @Override
@@ -170,5 +195,9 @@ public class MediaManager implements IMediaPlayer {
 
     interface OnFailure {
         void onLoadFail(String msg);
+    }
+    
+    public interface OnShowNotifi{
+        void onShowNotifi();
     }
 }
