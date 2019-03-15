@@ -23,7 +23,7 @@ public interface IMediaPlayer {
 
     void setRepeat();
 
-    int getTrackPosition();
+    int getTrackPosition(Track track);
 
     void setTrackPosition(int pos);
 
@@ -36,6 +36,4 @@ public interface IMediaPlayer {
     int getCurrentPosition();
 
     Track getTrack();
-
-
 }

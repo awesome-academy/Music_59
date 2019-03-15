@@ -1,23 +1,35 @@
 package com.example.dung.music_59.service;
 
+import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.widget.Toast;
+import android.widget.RemoteViews;
 
 import com.example.dung.music_59.R;
 import com.example.dung.music_59.data.model.Track;
 import com.example.dung.music_59.mediaplayer.MediaManager;
+import com.example.dung.music_59.ui.playmusic.PlayMusicActivity;
 
 import java.util.List;
 
-public class MusicService extends Service implements
-        MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener {
-    private IBinder mIBinder;
+public class MusicService extends Service implements MediaManager.OnShowNotifi {
+    public static final String ACTION_NEXT = "ACTION_NEXT";
+    public static final String ACTION_PREVIOUS = "ACTION_PREVIOUS";
+    public static final String ACTION_PLAY = "ACTION_PLAY";
+    public static final String ACTION_CLOSE = "ACTION_CLOSE";
+    private static final int REQUEST_CODE = 0;
+    private static final int FLAGS_PENDING_INTENT = 0;
+    private static final int FORE_GROUND_ID = 1;
+    private final IBinder mIBinder = new MusicBinder();
     private MediaManager mMediaManager;
+    private RemoteViews mNotificationView;
+    private Notification mNotification;
 
     @Nullable
     @Override
@@ -26,36 +38,38 @@ public class MusicService extends Service implements
     }
 
     @Override
-    public void onCompletion(MediaPlayer mediaPlayer) {
-        nextTrack();
-    }
-
-    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent.getAction() == null) {
+            return START_NOT_STICKY;
+        } else {
+            switch (intent.getAction()) {
+                case ACTION_NEXT:
+                    nextTrack();
+                    break;
+                case ACTION_PLAY:
+                    if(isPlaying())pauseTrack();
+                    else playTrack();
+                    break;
+                case ACTION_PREVIOUS:
+                    previousTrack();
+                    break;
+                case ACTION_CLOSE:
+                    break;
+            }
+        }
         return START_STICKY;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mIBinder = new MusicBinder();
         mMediaManager = MediaManager.getInstance(this);
     }
 
-    @Override
-    public void onPrepared(MediaPlayer mediaPlayer) {
-        mMediaManager.start();
-    }
-
-    @Override
-    public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
-        Toast.makeText(this, getString(R.string.notify_play_track_error),
-                Toast.LENGTH_SHORT).show();
-        return true;
-    }
-
+    @SuppressLint("NewApi")
     public void playMusic() {
         mMediaManager.create();
+       // showNotification();
     }
 
     public void setTrackList(List<Track> tracks) {
@@ -64,18 +78,22 @@ public class MusicService extends Service implements
 
     public void nextTrack() {
         mMediaManager.next();
+        changeStatePlay();
     }
 
     public void previousTrack() {
         mMediaManager.previous();
+        changeStatePlay();
     }
 
     public void pauseTrack() {
         mMediaManager.pause();
+        changeStatePlay();
     }
 
-    public void pauseToPlayTrack() {
+    public void playTrack() {
         mMediaManager.play();
+        changeStatePlay();
     }
 
     public void setShuffle() {
@@ -112,6 +130,72 @@ public class MusicService extends Service implements
 
     public void setTrack(int trackIndex) {
         mMediaManager.setTrackPosition(trackIndex);
+    }
+
+    public int getTrackPosition(Track track){
+        return mMediaManager.getTrackPosition(track);
+    }
+
+    @SuppressLint("NewApi")
+    public void showNotification() {
+        Intent intentMain = new Intent(getApplicationContext(), PlayMusicActivity.class);
+        intentMain.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        mNotificationView = new RemoteViews(getPackageName(), R.layout.custom_notification);
+        mNotificationView.setTextViewText(R.id.text_notifi_name_song, mMediaManager.getTrack().getTitle());
+        //Button previous song
+        setPreviousClick();
+        //Button pause song
+        setPlayClick();
+        //Button next song
+        setNextClick();
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
+                (int) System.currentTimeMillis(), intentMain, PendingIntent.FLAG_UPDATE_CURRENT);
+        mNotification = new Notification.Builder(this).build();
+        mNotification.bigContentView = mNotificationView;
+        mNotification.flags = Notification.FLAG_ONGOING_EVENT;
+        mNotification.icon = R.drawable.ic_launcher_background;
+        mNotification.contentIntent = pendingIntent;
+        startForeground(FORE_GROUND_ID, mNotification);
+    }
+
+    private void setPreviousClick() {
+        Intent previousIntent = new Intent(this, MusicService.class);
+        previousIntent.setAction(MusicService.ACTION_PREVIOUS);
+        PendingIntent pendingIntent
+                = PendingIntent.getService(getApplicationContext(),REQUEST_CODE, previousIntent, 0);
+        mNotificationView.setOnClickPendingIntent(R.id.image_notifi_previous, pendingIntent);
+    }
+
+    private void setPlayClick() {
+        Intent intent = new Intent(this, MusicService.class);
+        intent.setAction(MusicService.ACTION_PLAY);
+        PendingIntent pendingIntent
+                = PendingIntent.getService(getApplicationContext(),REQUEST_CODE, intent, 0);
+        mNotificationView.setOnClickPendingIntent(R.id.image_notifi_pause, pendingIntent);
+    }
+
+    private void setNextClick() {
+        Intent intent = new Intent(this, MusicService.class);
+        intent.setAction(MusicService.ACTION_NEXT);
+        PendingIntent pendingIntent
+                = PendingIntent.getService(getApplicationContext(),REQUEST_CODE, intent, 0);
+        mNotificationView.setOnClickPendingIntent(R.id.image_notifi_next, pendingIntent);
+    }
+
+    public void changeStatePlay() {
+        if (mMediaManager.isPlaying()) {
+            mNotificationView.setImageViewResource(R.id.image_notifi_pause, R.drawable.ic_pause_black_24dp);
+        } else {
+            mNotificationView.setImageViewResource(R.id.image_notifi_pause, R.drawable.ic_play_arrow_white_24dp);
+        }
+        startForeground(FORE_GROUND_ID, mNotification);
+    }
+
+    @Override
+    public void onShowNotifi() {
+        showNotification();
+        changeStatePlay();
     }
 
     public class MusicBinder extends Binder {

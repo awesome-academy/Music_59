@@ -2,7 +2,6 @@ package com.example.dung.music_59.ui.playmusic.playfragment;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,21 +17,15 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.dung.music_59.R;
 import com.example.dung.music_59.data.model.Track;
+import com.example.dung.music_59.service.AppController;
 import com.example.dung.music_59.service.MusicService;
 import com.example.dung.music_59.ui.playmusic.PlayMusicActivity;
 import com.example.dung.music_59.utils.TimeUtils;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-
 public class PlayMusicFragment extends Fragment implements View.OnClickListener,
         SeekBar.OnSeekBarChangeListener {
     private static final int DELAY_UPDATE_TIME_SONG = 100;
-    private static final String ARGUMENT_TRACK = " ARGUMENT_TRACK ";
-    private static final String ARGUMENT_LIST_TRACK = "ARGUMENT_LIST_TRACK";
     private Track mTrack;
-    private List<Track> mTracks;
     private MusicService mMusicService;
     private ImageView mImageMusic;
     private ImageButton mImageNext;
@@ -43,22 +36,12 @@ public class PlayMusicFragment extends Fragment implements View.OnClickListener,
     private TextView mTextTrackDuration;
     private TextView mTextNameTrack;
 
-    public static PlayMusicFragment newInstance(Track track, List<Track> tracks) {
-        PlayMusicFragment playMusicFragment = new PlayMusicFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(ARGUMENT_TRACK, track);
-        args.putParcelableArrayList(ARGUMENT_LIST_TRACK, (ArrayList<? extends Parcelable>) tracks);
-        playMusicFragment.setArguments(args);
-        return playMusicFragment;
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_play_music, container, false);
-        getBundle();
         initView(view);
         initHandle();
         upDateTimeSong();
@@ -68,28 +51,11 @@ public class PlayMusicFragment extends Fragment implements View.OnClickListener,
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setMusicService();
-    }
-
-    public void setMusicService() {
         mMusicService = ((PlayMusicActivity) getActivity()).getService();
-        mMusicService.setTrackList(mTracks);
-        int pos = 0;
-        for (int i = 0; i < mTracks.size(); i++) {
-            if (mTrack.getId() == mTracks.get(i).getId()) {
-                pos = i;
-            }
-        }
-        mMusicService.setTrack(pos);
         mMusicService.playMusic();
-    }
-
-    private void getBundle() {
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            mTrack = bundle.getParcelable(ARGUMENT_TRACK);
-            mTracks = bundle.getParcelableArrayList(ARGUMENT_LIST_TRACK);
-        }
+        mTrack = mMusicService.getTrack();
+        if (mTrack != null) Glide.with(getContext()).load(mTrack.getArtworkUrl())
+                .apply(RequestOptions.circleCropTransform()).into(mImageMusic);
     }
 
     private void initView(View view) {
@@ -102,8 +68,7 @@ public class PlayMusicFragment extends Fragment implements View.OnClickListener,
         mTextTrackDuration = view.findViewById(R.id.text_time_end);
         mSeekBar.setOnSeekBarChangeListener(this);
         mTextNameTrack = view.findViewById(R.id.text_name_track);
-        Glide.with(getContext()).load(mTrack.getArtworkUrl())
-                .apply(RequestOptions.circleCropTransform()).into(mImageMusic);
+        AppController.getInstance().setPlayMusicFragment(this);
     }
 
     private void initHandle() {
@@ -152,7 +117,7 @@ public class PlayMusicFragment extends Fragment implements View.OnClickListener,
 
     private void handlePlay() {
         if (!mMusicService.isPlaying()) {
-            mMusicService.pauseToPlayTrack();
+            mMusicService.playTrack();
             mImagePlay.setImageResource(R.drawable.ic_pause_black_24dp);
         } else {
             mMusicService.pauseTrack();
@@ -183,8 +148,9 @@ public class PlayMusicFragment extends Fragment implements View.OnClickListener,
                 if (mMusicService != null && mMusicService.isPlaying()) {
                     mSeekBar.setProgress(mMusicService.getCurrentPosition());
                     mSeekBar.setMax(mMusicService.getTimeTotal());
-                    mTextNameTrack.setText(mMusicService.getTrack().getTitle());
                     getTimeTrack();
+                    mTextNameTrack.setText(mMusicService.getTrack().getTitle());
+                    updateBottomController();
                 }
                 handler.postDelayed(this, DELAY_UPDATE_TIME_SONG);
             }
@@ -194,5 +160,10 @@ public class PlayMusicFragment extends Fragment implements View.OnClickListener,
     private void getTimeTrack() {
         mTextTrackDuration.setText(TimeUtils.timeFormat(mMusicService.getTimeTotal()));
         mTextTimeStart.setText(TimeUtils.timeFormat(mMusicService.getCurrentPosition()));
+    }
+
+    public void updateBottomController() {
+        if (mMusicService != null && mMusicService.isPlaying()) mImagePlay.setImageResource(R.drawable.ic_pause_black_24dp);
+        else mImagePlay.setImageResource(R.drawable.ic_play_arrow_white_24dp);
     }
 }

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/color_black">
+
+    <ImageView
+        android:id="@+id/image_notifi"
+        android:layout_width="@dimen/dp_128"
+        android:layout_height="@dimen/dp_128"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/default_album_art" />
+
+    <TextView
+        android:id="@+id/text_notifi_name_song"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/dp_10"
+        android:layout_toRightOf="@+id/image_notifi" />
+
+    <LinearLayout
+        android:layout_below="@id/text_notifi_name_song"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/image_notifi"
+        android:layout_gravity="bottom"
+        android:layout_marginTop="@dimen/dp_70"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/image_notifi_previous"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dp_5"
+            android:layout_marginLeft="@dimen/dp_10"
+            android:layout_toRightOf="@+id/image_notifi"
+            android:layout_weight="1"
+            android:src="@drawable/ic_skip_previous_white_24dp" />
+
+        <ImageView
+            android:id="@+id/image_notifi_pause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/dp_5"
+            android:layout_weight="1"
+            android:src="@drawable/ic_pause_black_24dp" />
+
+        <ImageView
+            android:id="@+id/image_notifi_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/dp_5"
+            android:layout_weight="1"
+            android:src="@drawable/ic_skip_next_white_24dp" />
+    </LinearLayout>
+
+</RelativeLayout>
