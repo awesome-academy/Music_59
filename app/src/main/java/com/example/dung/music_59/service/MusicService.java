@@ -5,7 +5,6 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -47,8 +46,11 @@ public class MusicService extends Service implements MediaManager.OnShowNotifi {
                     nextTrack();
                     break;
                 case ACTION_PLAY:
-                    if(isPlaying())pauseTrack();
-                    else playTrack();
+                    if (isPlaying()) {
+                        pauseTrack();
+                    } else {
+                        playTrack();
+                    }
                     break;
                 case ACTION_PREVIOUS:
                     previousTrack();
@@ -69,7 +71,7 @@ public class MusicService extends Service implements MediaManager.OnShowNotifi {
     @SuppressLint("NewApi")
     public void playMusic() {
         mMediaManager.create();
-       // showNotification();
+        // showNotification();
     }
 
     public void setTrackList(List<Track> tracks) {
@@ -101,7 +103,7 @@ public class MusicService extends Service implements MediaManager.OnShowNotifi {
     }
 
     public void setRepeat() {
-        mMediaManager.setRepeat();
+        mMediaManager.setLoop();
     }
 
     public int getPosition() {
@@ -132,8 +134,12 @@ public class MusicService extends Service implements MediaManager.OnShowNotifi {
         mMediaManager.setTrackPosition(trackIndex);
     }
 
-    public int getTrackPosition(Track track){
+    public int getTrackPosition(Track track) {
         return mMediaManager.getTrackPosition(track);
+    }
+
+    public List<Track> getTracksList() {
+        return mMediaManager.getTracksList();
     }
 
     @SuppressLint("NewApi")
@@ -144,11 +150,11 @@ public class MusicService extends Service implements MediaManager.OnShowNotifi {
         mNotificationView = new RemoteViews(getPackageName(), R.layout.custom_notification);
         mNotificationView.setTextViewText(R.id.text_notifi_name_song, mMediaManager.getTrack().getTitle());
         //Button previous song
-        setPreviousClick();
+        setPreviousNotifiClick();
         //Button pause song
-        setPlayClick();
+        setPlayNotifiClick();
         //Button next song
-        setNextClick();
+        setNextNotifiClick();
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
                 (int) System.currentTimeMillis(), intentMain, PendingIntent.FLAG_UPDATE_CURRENT);
         mNotification = new Notification.Builder(this).build();
@@ -159,27 +165,27 @@ public class MusicService extends Service implements MediaManager.OnShowNotifi {
         startForeground(FORE_GROUND_ID, mNotification);
     }
 
-    private void setPreviousClick() {
+    private void setPreviousNotifiClick() {
         Intent previousIntent = new Intent(this, MusicService.class);
         previousIntent.setAction(MusicService.ACTION_PREVIOUS);
         PendingIntent pendingIntent
-                = PendingIntent.getService(getApplicationContext(),REQUEST_CODE, previousIntent, 0);
+                = PendingIntent.getService(getApplicationContext(), REQUEST_CODE, previousIntent, 0);
         mNotificationView.setOnClickPendingIntent(R.id.image_notifi_previous, pendingIntent);
     }
 
-    private void setPlayClick() {
+    private void setPlayNotifiClick() {
         Intent intent = new Intent(this, MusicService.class);
         intent.setAction(MusicService.ACTION_PLAY);
         PendingIntent pendingIntent
-                = PendingIntent.getService(getApplicationContext(),REQUEST_CODE, intent, 0);
+                = PendingIntent.getService(getApplicationContext(), REQUEST_CODE, intent, 0);
         mNotificationView.setOnClickPendingIntent(R.id.image_notifi_pause, pendingIntent);
     }
 
-    private void setNextClick() {
+    private void setNextNotifiClick() {
         Intent intent = new Intent(this, MusicService.class);
         intent.setAction(MusicService.ACTION_NEXT);
         PendingIntent pendingIntent
-                = PendingIntent.getService(getApplicationContext(),REQUEST_CODE, intent, 0);
+                = PendingIntent.getService(getApplicationContext(), REQUEST_CODE, intent, 0);
         mNotificationView.setOnClickPendingIntent(R.id.image_notifi_next, pendingIntent);
     }
 
@@ -196,6 +202,18 @@ public class MusicService extends Service implements MediaManager.OnShowNotifi {
     public void onShowNotifi() {
         showNotification();
         changeStatePlay();
+    }
+
+    public boolean isShuffle() {
+        return mMediaManager.isShuffle();
+    }
+
+    public void setLoopTrack() {
+        mMediaManager.setLoop();
+    }
+
+    public boolean isLoop() {
+        return mMediaManager.isLoop();
     }
 
     public class MusicBinder extends Binder {

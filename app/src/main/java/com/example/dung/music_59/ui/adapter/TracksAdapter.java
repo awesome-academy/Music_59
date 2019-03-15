@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide;
 import com.example.dung.music_59.R;
 import com.example.dung.music_59.data.model.Track;
 
+import java.util.Collections;
 import java.util.List;
 
 public class TracksAdapter extends RecyclerView.Adapter<TracksAdapter.ViewHolder> {
@@ -44,6 +45,37 @@ public class TracksAdapter extends RecyclerView.Adapter<TracksAdapter.ViewHolder
         return mTracks == null ? 0 : mTracks.size();
     }
 
+    public void setTrackListener(onClickTrackListener trackListener) {
+        mTrackListener = trackListener;
+    }
+
+    public void setTracks(List<Track> tracks) {
+        mTracks = tracks;
+        notifyDataSetChanged();
+    }
+
+    public void onMove(int fromPosition, int toPosition) {
+        if (fromPosition < toPosition) {
+            for (int i = fromPosition; i < toPosition; i++) {
+                Collections.swap(mTracks, i, i + 1);
+            }
+        } else {
+            for (int i = fromPosition; i > toPosition; i--) {
+                Collections.swap(mTracks, i, i - 1);
+            }
+        }
+        notifyItemMoved(fromPosition, toPosition);
+    }
+
+    public void swipe(int position, int direction) {
+        mTracks.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public interface onClickTrackListener {
+        void onTrackClick(Track track);
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private ImageView mImageTrack;
         private TextView mTextNameTrack;
@@ -63,11 +95,12 @@ public class TracksAdapter extends RecyclerView.Adapter<TracksAdapter.ViewHolder
             mTrackListener = trackListener;
         }
 
-        public void onBindView(Track track){
+        public void onBindView(Track track) {
             mTextNameTrack.setText(track.getTitle());
             mTextNameArtist.setText(track.getArtist());
             itemView.setOnClickListener(this);
-            Glide.with(itemView.getContext()).load(track.getArtworkUrl()).into(mImageTrack);
+            Glide.with(itemView.getContext()).load(track.getArtworkUrl())
+                    .placeholder(R.drawable.back_ground_genre).into(mImageTrack);
             mTrack = track;
         }
 
@@ -75,18 +108,5 @@ public class TracksAdapter extends RecyclerView.Adapter<TracksAdapter.ViewHolder
         public void onClick(View view) {
             mTrackListener.onTrackClick(mTrack);
         }
-    }
-
-    public interface onClickTrackListener{
-        void onTrackClick(Track track);
-    }
-
-    public void setTrackListener(onClickTrackListener trackListener){
-        mTrackListener = trackListener;
-    }
-
-    public void setTracks(List<Track> tracks) {
-        mTracks = tracks;
-        notifyDataSetChanged();
     }
 }

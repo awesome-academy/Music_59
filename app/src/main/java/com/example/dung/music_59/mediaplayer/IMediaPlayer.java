@@ -21,7 +21,7 @@ public interface IMediaPlayer {
 
     void setShuffle();
 
-    void setRepeat();
+    void setLoop();
 
     int getTrackPosition(Track track);
 
@@ -36,4 +36,6 @@ public interface IMediaPlayer {
     int getCurrentPosition();
 
     Track getTrack();
+
+    List<Track> getTracksList();
 }

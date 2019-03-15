@@ -54,7 +54,6 @@
         android:layout_marginRight="@dimen/dp_8"
         android:layout_marginBottom="@dimen/dp_15"
         android:max="10"
-        android:progress="3"
         app:layout_constraintBottom_toTopOf="@+id/image_play"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/image_favorite" />
