@@ -20,7 +20,7 @@ public class TrackLocalDataSource implements TrackDataSource.Local {
     }
 
     @Override
-    public void getGenres(TrackDataSource.onGetGenresCallBack callBack) {
+    public void getGenres(TrackDataSource.OnGetGenresCallBack callBack) {
         new GenresAsyncTask(mContext, callBack).execute();
     }
 }

@@ -11,7 +11,9 @@ import android.support.annotation.StringDef;
         TrackEntity.DOWLOAD_URL,
         TrackEntity.DESCRIPTION,
         TrackEntity.ARTWORD_URL,
-        TrackEntity.DOWNLOADABLE
+        TrackEntity.DOWNLOADABLE,
+        TrackEntity.TRACK,
+        TrackEntity.COLLECTION
 })
 
 public @interface TrackEntity {
@@ -24,5 +26,7 @@ public @interface TrackEntity {
     String DESCRIPTION = "description";
     String ARTWORD_URL = "artwork_url";
     String DOWNLOADABLE = "downloadable";
+    String TRACK = "track";
+    String COLLECTION = "collection";
 }
 

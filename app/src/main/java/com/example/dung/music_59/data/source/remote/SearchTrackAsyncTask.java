@@ -19,19 +19,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FetchTrackAsync extends AsyncTask<String, Void, List<Track>> {
-    private static final int PARAM_URL = 0;
+public class SearchTrackAsyncTask extends AsyncTask<String,String, List<Track>> {
     protected Exception mException;
-    private TrackDataSource.OnGetTrackCallBack mCallBack;
+    private static final int PARAM_URL = 0;
     private String mRequestMethod = "GET";
+    private TrackDataSource.OnGetGenresCallBack mCallBack;
 
-    public FetchTrackAsync(TrackDataSource.OnGetTrackCallBack callBack) {
+    public SearchTrackAsyncTask(TrackDataSource.OnGetGenresCallBack callBack) {
         mCallBack = callBack;
-    }
-
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
     }
 
     @Override
@@ -50,18 +45,14 @@ public class FetchTrackAsync extends AsyncTask<String, Void, List<Track>> {
 
     private List<Track> parseTrackData(String responseString) throws JSONException {
         List<Track> tracks = new ArrayList<>();
-        JSONObject jsonObject = new JSONObject(responseString);
-        JSONArray jsonArray = jsonObject.getJSONArray(TrackEntity.COLLECTION);
+        JSONArray jsonArray = new JSONArray(responseString);
         for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject jsonTrack = jsonArray.getJSONObject(i).getJSONObject(TrackEntity.TRACK);
+            JSONObject jsonTrack = jsonArray.getJSONObject(i);
             long id = jsonTrack.getLong(TrackEntity.ID);
             int duraion = jsonTrack.getInt(TrackEntity.DURATION);
             String title = jsonTrack.getString(TrackEntity.TITLE);
             String streamUrl = StringUtils.initStreamApi(id);
-            String artworkUrl = "";
-            if (!jsonTrack.isNull(TrackEntity.ARTWORD_URL)) {
-                artworkUrl = jsonTrack.getString(TrackEntity.ARTWORD_URL);
-            }
+            String artworkUrl = jsonTrack.getString(TrackEntity.ARTWORD_URL);
             boolean isDownloadable = jsonTrack.getBoolean(TrackEntity.DOWNLOADABLE);
 
             Track.Builder builder = new Track.Builder().setId(id).setDuration(duraion).setTitle(title)
@@ -92,15 +83,5 @@ public class FetchTrackAsync extends AsyncTask<String, Void, List<Track>> {
             reader.close();
         }
         return response.toString();
-    }
-
-    @Override
-    protected void onPostExecute(List<Track> tracks) {
-        super.onPostExecute(tracks);
-        if (mException == null) {
-            mCallBack.onTrackLoaded(tracks);
-        } else {
-            mCallBack.onFailure();
-        }
     }
 }

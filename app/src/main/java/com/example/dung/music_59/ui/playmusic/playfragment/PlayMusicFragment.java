@@ -31,6 +31,8 @@ public class PlayMusicFragment extends Fragment implements View.OnClickListener,
     private ImageButton mImageNext;
     private ImageButton mImagePrevious;
     private ImageButton mImagePlay;
+    private ImageView mImageShuffle;
+    private ImageView mImageLoop;
     private SeekBar mSeekBar;
     private TextView mTextTimeStart;
     private TextView mTextTrackDuration;
@@ -54,8 +56,10 @@ public class PlayMusicFragment extends Fragment implements View.OnClickListener,
         mMusicService = ((PlayMusicActivity) getActivity()).getService();
         mMusicService.playMusic();
         mTrack = mMusicService.getTrack();
-        if (mTrack != null) Glide.with(getContext()).load(mTrack.getArtworkUrl())
-                .apply(RequestOptions.circleCropTransform()).into(mImageMusic);
+        if (mTrack != null) {
+            Glide.with(getContext()).load(mTrack.getArtworkUrl())
+                    .apply(RequestOptions.circleCropTransform()).placeholder(R.drawable.back_ground_genre).into(mImageMusic);
+        }
     }
 
     private void initView(View view) {
@@ -68,6 +72,8 @@ public class PlayMusicFragment extends Fragment implements View.OnClickListener,
         mTextTrackDuration = view.findViewById(R.id.text_time_end);
         mSeekBar.setOnSeekBarChangeListener(this);
         mTextNameTrack = view.findViewById(R.id.text_name_track);
+        mImageShuffle = view.findViewById(R.id.image_shuffle);
+        mImageLoop = view.findViewById(R.id.image_loop);
         AppController.getInstance().setPlayMusicFragment(this);
     }
 
@@ -75,6 +81,8 @@ public class PlayMusicFragment extends Fragment implements View.OnClickListener,
         mImageNext.setOnClickListener(this);
         mImagePlay.setOnClickListener(this);
         mImagePrevious.setOnClickListener(this);
+        mImageShuffle.setOnClickListener(this);
+        mImageLoop.setOnClickListener(this);
     }
 
     @Override
@@ -94,25 +102,36 @@ public class PlayMusicFragment extends Fragment implements View.OnClickListener,
                 break;
             case R.id.image_shuffle:
                 handleShuffle();
+                break;
         }
     }
 
     private void handleShuffle() {
         mMusicService.setShuffle();
+        if (mMusicService.isShuffle())
+            mImageShuffle.setImageResource(R.drawable.ic_shuffle_red_24dp);
+        else mImageShuffle.setImageResource(R.drawable.ic_shuffle_white_24dp);
     }
 
     private void handleLoop() {
-        mMusicService.setRepeat();
+        mMusicService.setLoopTrack();
+        if (mMusicService.isLoop()) {
+            mImageLoop.setImageResource(R.drawable.ic_loop_red_24dp);
+        } else {
+            mImageLoop.setImageResource(R.drawable.ic_loop_white_24dp);
+        }
     }
 
     private void handleNext() {
         mImagePlay.setImageResource(R.drawable.ic_pause_black_24dp);
         mMusicService.nextTrack();
+        updateImage();
     }
 
     private void handlePrevious() {
         mImagePlay.setImageResource(R.drawable.ic_pause_black_24dp);
         mMusicService.previousTrack();
+        updateImage();
     }
 
     private void handlePlay() {
@@ -162,8 +181,22 @@ public class PlayMusicFragment extends Fragment implements View.OnClickListener,
         mTextTimeStart.setText(TimeUtils.timeFormat(mMusicService.getCurrentPosition()));
     }
 
+
     public void updateBottomController() {
-        if (mMusicService != null && mMusicService.isPlaying()) mImagePlay.setImageResource(R.drawable.ic_pause_black_24dp);
-        else mImagePlay.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+        if (mMusicService != null && mMusicService.isPlaying()) {
+            mImagePlay.setImageResource(R.drawable.ic_pause_black_24dp);
+            return;
+        }
+        mImagePlay.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+    }
+
+    public void updateChangeStateNotifi() {
+        mImagePlay.setImageResource(R.drawable.ic_pause_black_24dp);
+    }
+
+    public void updateImage() {
+        Glide.with(getContext()).load(mMusicService.getTrack().getArtworkUrl())
+                .placeholder(R.drawable.back_ground_genre)
+                .apply(RequestOptions.circleCropTransform()).into(mImageMusic);
     }
 }

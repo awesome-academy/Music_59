@@ -5,7 +5,6 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 
 import com.example.dung.music_59.data.model.Track;
-import com.example.dung.music_59.service.MusicService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ public class MediaManager implements IMediaPlayer, MediaPlayer.OnCompletionListe
     private int mTrackPosition;
     private boolean mIsRestartNotifi;
     private boolean mIsShuffle;
-    private boolean mIsRepeat;
+    private boolean mIsLoop;
     private OnFailure mLoadFail;
     private OnShowNotifi mOnShowNotifi;
 
@@ -86,7 +85,7 @@ public class MediaManager implements IMediaPlayer, MediaPlayer.OnCompletionListe
 
     @Override
     public void next() {
-        if (mIsRepeat) {
+        if (mIsLoop) {
 
         } else if (mIsShuffle) {
             shuffle();
@@ -115,6 +114,14 @@ public class MediaManager implements IMediaPlayer, MediaPlayer.OnCompletionListe
             newPosition = mRandom.nextInt(mTracks.size());
         }
         mTrackPosition = newPosition;
+    }
+
+    public boolean isShuffle() {
+        return mIsShuffle;
+    }
+
+    public boolean isLoop() {
+        return mIsLoop;
     }
 
     @Override
@@ -149,6 +156,11 @@ public class MediaManager implements IMediaPlayer, MediaPlayer.OnCompletionListe
     }
 
     @Override
+    public List<Track> getTracksList() {
+        return mTracks;
+    }
+
+    @Override
     public void setShuffle() {
         if (mIsShuffle) {
             mIsShuffle = false;
@@ -158,11 +170,11 @@ public class MediaManager implements IMediaPlayer, MediaPlayer.OnCompletionListe
     }
 
     @Override
-    public void setRepeat() {
-        if (mIsRepeat) {
-            mIsRepeat = false;
+    public void setLoop() {
+        if (mIsLoop) {
+            mIsLoop = false;
         } else {
-            mIsRepeat = true;
+            mIsLoop = true;
         }
     }
 
@@ -196,7 +208,7 @@ public class MediaManager implements IMediaPlayer, MediaPlayer.OnCompletionListe
     interface OnFailure {
         void onLoadFail(String msg);
     }
-    
+
     public interface OnShowNotifi{
         void onShowNotifi();
     }

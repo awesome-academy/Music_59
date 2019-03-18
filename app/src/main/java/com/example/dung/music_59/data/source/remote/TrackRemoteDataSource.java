@@ -20,7 +20,8 @@ public class TrackRemoteDataSource implements TrackDataSource.Remote {
     }
 
     @Override
-    public void getTrackByGenre(String url, TrackDataSource.onGetTrackCallBack callBack) {
+    public void getTrackByGenre(String url, TrackDataSource.OnGetTrackCallBack callBack) {
         new FetchTrackAsync(callBack).execute(url);
     }
+
 }

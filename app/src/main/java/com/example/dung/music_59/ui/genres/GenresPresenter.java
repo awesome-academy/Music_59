@@ -23,7 +23,7 @@ public class GenresPresenter implements GenresContract.Presenter {
     @Override
     public void loadTracksByGenres(Genre genre) {
         String url = StringUtils.initGenreApi(GENRE_KIND, genre.getKey(), LIMIT, OFFSET);
-        mRepository.getTrackByGenre(url, new TrackDataSource.onGetTrackCallBack() {
+        mRepository.getTrackByGenre(url, new TrackDataSource.OnGetTrackCallBack() {
             @Override
             public void onTrackLoaded(List<Track> tracks) {
                 mView.showTracks(tracks);
