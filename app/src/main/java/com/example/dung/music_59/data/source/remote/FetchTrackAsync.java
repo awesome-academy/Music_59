@@ -1,7 +1,9 @@
 package com.example.dung.music_59.data.source.remote;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 
+import com.example.dung.music_59.R;
 import com.example.dung.music_59.data.model.Track;
 import com.example.dung.music_59.data.source.TrackDataSource;
 import com.example.dung.music_59.utils.StringUtils;
@@ -55,18 +57,19 @@ public class FetchTrackAsync extends AsyncTask<String, Void, List<Track>> {
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonTrack = jsonArray.getJSONObject(i).getJSONObject(TrackEntity.TRACK);
             long id = jsonTrack.getLong(TrackEntity.ID);
-            int duraion = jsonTrack.getInt(TrackEntity.DURATION);
+            int duration = jsonTrack.getInt(TrackEntity.DURATION);
             String title = jsonTrack.getString(TrackEntity.TITLE);
             String streamUrl = StringUtils.initStreamApi(id);
+            String dowloadUrl = StringUtils.initDowloadApi(id);
             String artworkUrl = "";
             if (!jsonTrack.isNull(TrackEntity.ARTWORD_URL)) {
                 artworkUrl = jsonTrack.getString(TrackEntity.ARTWORD_URL);
             }
             boolean isDownloadable = jsonTrack.getBoolean(TrackEntity.DOWNLOADABLE);
 
-            Track.Builder builder = new Track.Builder().setId(id).setDuration(duraion).setTitle(title)
+            Track.Builder builder = new Track.Builder().setId(id).setDuration(duration).setTitle(title)
                     .setStreamUrl(streamUrl)
-                    .setArtworkUrl(artworkUrl).setDowloadable(isDownloadable);
+                    .setArtworkUrl(artworkUrl).setDowloadable(isDownloadable).setDowloadUrl(dowloadUrl);
             Track track = builder.build();
             tracks.add(track);
         }

@@ -42,7 +42,7 @@ public class MediaManager implements IMediaPlayer, MediaPlayer.OnCompletionListe
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
-        nextTrack();
+        next();
     }
 
     @Override
@@ -69,11 +69,6 @@ public class MediaManager implements IMediaPlayer, MediaPlayer.OnCompletionListe
         } catch (IOException e) {
             mLoadFail.onLoadFail(e.getMessage());
         }
-    }
-
-    @Override
-    public void setTracksList(List<Track> tracks) {
-        mTracks = tracks;
     }
 
     @Override
@@ -161,6 +156,11 @@ public class MediaManager implements IMediaPlayer, MediaPlayer.OnCompletionListe
     }
 
     @Override
+    public void setTracksList(List<Track> tracks) {
+        mTracks = tracks;
+    }
+
+    @Override
     public void setShuffle() {
         if (mIsShuffle) {
             mIsShuffle = false;
@@ -205,11 +205,16 @@ public class MediaManager implements IMediaPlayer, MediaPlayer.OnCompletionListe
         return mMediaPlayer.isPlaying();
     }
 
+    @Override
+    public void cancelMedia() {
+        mMediaPlayer.release();
+    }
+
     interface OnFailure {
         void onLoadFail(String msg);
     }
 
-    public interface OnShowNotifi{
+    public interface OnShowNotifi {
         void onShowNotifi();
     }
 }
