@@ -38,4 +38,6 @@ public interface IMediaPlayer {
     Track getTrack();
 
     List<Track> getTracksList();
+
+    void cancelMedia();
 }

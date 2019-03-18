@@ -6,5 +6,7 @@ public class Constants {
     public static final String LIMIT = "&limit=%d";
     public static final String OFFSET = "&offset=%d";
     public static final String TRACKS = "tracks";
-    public static final String BASE_URL_STREAM="https://api.soundcloud.com/";
+    public static final String BASE_URL_STREAM = "https://api.soundcloud.com/";
+    public static final String BASE_URL_DOWNLOAD
+            = "https://api.soundcloud.com/tracks/%s/download?client_id=%s";
 }

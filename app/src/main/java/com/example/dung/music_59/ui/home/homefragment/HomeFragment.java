@@ -59,7 +59,7 @@ public class HomeFragment extends Fragment
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), SPAN_COUNT);
         mRecyclerGenres.setLayoutManager(layoutManager);
         mRepository = TrackRepository.getInstance(TrackLocalDataSource.getInstance(getContext()),
-                        TrackRemoteDataSource.getInstance(getContext()));
+                TrackRemoteDataSource.getInstance(getContext()));
         mPresenter = new HomePresenter(this, mRepository);
         mGenresAdapter.setGenreListener(this);
     }

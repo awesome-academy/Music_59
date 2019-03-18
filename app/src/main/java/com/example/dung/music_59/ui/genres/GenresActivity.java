@@ -17,7 +17,7 @@ import com.example.dung.music_59.data.model.Track;
 import com.example.dung.music_59.data.source.TrackRepository;
 import com.example.dung.music_59.data.source.local.TrackLocalDataSource;
 import com.example.dung.music_59.data.source.remote.TrackRemoteDataSource;
-import com.example.dung.music_59.service.MusicService;
+import com.example.dung.music_59.service.musicservice.MusicService;
 import com.example.dung.music_59.ui.adapter.TracksAdapter;
 import com.example.dung.music_59.ui.playmusic.PlayMusicActivity;
 
@@ -26,10 +26,9 @@ import java.util.List;
 
 public class GenresActivity extends AppCompatActivity
         implements TracksAdapter.onClickTrackListener, GenresContract.View {
-    private static final String BUNDLE_GRENRE = "BUNDLE_GRENRE";
+    private static final String BUNDLE_GRENRE = " BUNDLE_GRENRE";
     private static final String EXTRA_BUNDLE = "EXTRA_BUNDLE";
     public static MusicService sMusicService;
-
     private ImageView mImageGenre;
     private RecyclerView mRecyclerTrack;
     private TracksAdapter mTracksAdapter;
@@ -107,6 +106,12 @@ public class GenresActivity extends AppCompatActivity
         setSupportActionBar(mToolbarGenres);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        mTracksAdapter.notifyDataSetChanged();
     }
 
     private void initView() {
