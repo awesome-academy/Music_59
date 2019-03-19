@@ -22,6 +22,7 @@ public class MediaManager implements IMediaPlayer, MediaPlayer.OnCompletionListe
     private boolean mIsLoop;
     private OnFailure mLoadFail;
     private OnShowNotifi mOnShowNotifi;
+    private Track mTrack;
 
     private MediaManager(OnShowNotifi onShowNotifi) {
         mTracks = new ArrayList<>();
@@ -61,6 +62,7 @@ public class MediaManager implements IMediaPlayer, MediaPlayer.OnCompletionListe
         mMediaPlayer.reset();
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
+            mTrack = mTracks.get(mTrackPosition);
             mMediaPlayer.setDataSource(String.valueOf(Uri.parse(mTracks.get(mTrackPosition).getStreamUrl())));
             mMediaPlayer.setOnErrorListener(this);
             mMediaPlayer.setOnCompletionListener(this);
@@ -96,6 +98,7 @@ public class MediaManager implements IMediaPlayer, MediaPlayer.OnCompletionListe
     }
 
     private void nextTrack() {
+        getTrackPosition(mTrack);
         mTrackPosition++;
         if (mTrackPosition > mTracks.size() - 1) {
             mTrackPosition = 0;
@@ -128,6 +131,7 @@ public class MediaManager implements IMediaPlayer, MediaPlayer.OnCompletionListe
 
     @Override
     public void previous() {
+        getTrackPosition(mTrack);
         mTrackPosition--;
         if (mTrackPosition < 0) {
             mTrackPosition = mTracks.size() - 1;
@@ -147,7 +151,7 @@ public class MediaManager implements IMediaPlayer, MediaPlayer.OnCompletionListe
 
     @Override
     public Track getTrack() {
-        return mTracks.get(mTrackPosition);
+        return mTrack;
     }
 
     @Override
@@ -192,7 +196,7 @@ public class MediaManager implements IMediaPlayer, MediaPlayer.OnCompletionListe
 
     @Override
     public void setTrackPosition(int pos) {
-
+        mTrackPosition = pos;
     }
 
     @Override

@@ -23,6 +23,11 @@ public class TrackRepository implements TrackDataSource.Local, TrackDataSource.R
     }
 
     @Override
+    public void getTrackLocal(TrackDataSource.OnGetTrackLocalCallBack callBack) {
+        mLocal.getTrackLocal(callBack);
+    }
+
+    @Override
     public void getTrackByGenre(String url, TrackDataSource.OnGetTrackCallBack callBack) {
         mRemote.getTrackByGenre(url, callBack);
     }
