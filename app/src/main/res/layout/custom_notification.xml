@@ -18,7 +18,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_marginTop="@dimen/dp_10"
-        android:layout_toRightOf="@+id/image_notifi" />
+        android:layout_toRightOf="@+id/image_notifi"
+        android:singleLine="true"/>
 
     <ImageView
         android:id="@+id/image_notifi_close"
