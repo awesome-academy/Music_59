@@ -29,10 +29,10 @@
             android:layout_marginStart="@dimen/dp_8"
             android:layout_marginLeft="@dimen/dp_8"
             android:layout_marginBottom="@dimen/dp_10"
-            android:textSize="@dimen/dp_16"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:singleLine="true"
             android:textColor="@color/color_black"
+            android:textSize="@dimen/dp_16"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/image_track" />
 
         <TextView
@@ -42,11 +42,11 @@
             android:layout_marginStart="@dimen/dp_8"
             android:layout_marginLeft="@dimen/dp_8"
             android:layout_marginTop="@dimen/dp_10"
+            android:singleLine="true"
+            android:textColor="@color/color_black"
             android:textSize="@dimen/sp_18"
             app:layout_constraintStart_toEndOf="@+id/image_track"
-            app:layout_constraintTop_toTopOf="parent"
-            android:singleLine="true"
-            android:textColor="@color/color_black" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/image_favorite"
@@ -56,10 +56,10 @@
             android:layout_marginEnd="@dimen/dp_8"
             android:layout_marginRight="@dimen/dp_8"
             android:layout_marginBottom="@dimen/dp_8"
+            android:src="@drawable/ic_favorite_border_red_24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:src="@drawable/ic_favorite_border_red_24dp" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/image_dowload"
@@ -69,11 +69,10 @@
             android:layout_marginEnd="@dimen/dp_8"
             android:layout_marginRight="@dimen/dp_8"
             android:layout_marginBottom="@dimen/dp_8"
+            android:src="@drawable/ic_file_download_black_24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/image_favorite"
-            app:layout_constraintTop_toTopOf="parent"
-            android:src="@drawable/ic_file_download_black_24dp" />
-
+            app:layout_constraintTop_toTopOf="parent" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.v7.widget.CardView>

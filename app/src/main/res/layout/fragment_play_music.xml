@@ -10,7 +10,6 @@
         android:id="@+id/image_track_play"
         android:layout_width="@dimen/dp_280"
         android:layout_height="@dimen/dp_280"
-        android:src="@drawable/back_ground_genre"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
