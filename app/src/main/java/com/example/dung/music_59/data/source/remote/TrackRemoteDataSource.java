@@ -23,5 +23,4 @@ public class TrackRemoteDataSource implements TrackDataSource.Remote {
     public void getTrackByGenre(String url, TrackDataSource.OnGetTrackCallBack callBack) {
         new FetchTrackAsync(callBack).execute(url);
     }
-
 }

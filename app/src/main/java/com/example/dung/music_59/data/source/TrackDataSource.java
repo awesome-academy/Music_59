@@ -12,7 +12,6 @@ public interface TrackDataSource {
 
     interface OnGetTrackCallBack {
         void onTrackLoaded(List<Track> tracks);
-
         void onFailure();
     }
 

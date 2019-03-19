@@ -98,6 +98,9 @@ public class TracksAdapter extends RecyclerView.Adapter<TracksAdapter.ViewHolder
         public void onBindView(Track track) {
             mTextNameTrack.setText(track.getTitle());
             mTextNameArtist.setText(track.getArtist());
+            if (!track.isDowloadable()) {
+                mImageDowload.setVisibility(View.INVISIBLE);
+            }
             itemView.setOnClickListener(this);
             Glide.with(itemView.getContext()).load(track.getArtworkUrl())
                     .placeholder(R.drawable.back_ground_genre).into(mImageTrack);

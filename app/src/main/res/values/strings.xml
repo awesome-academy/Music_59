@@ -7,6 +7,7 @@
     <string name="title_dowload">Dowload</string>
     <string name="title_music_59">Music 59</string>
     <string name="notify_play_track_error">play track false</string>
+    <string name="permission_failure">Chưa được cấp quyền</string>
 
     <string-array name="key_genres">
         <item>soundcloud:genres:all-music</item>

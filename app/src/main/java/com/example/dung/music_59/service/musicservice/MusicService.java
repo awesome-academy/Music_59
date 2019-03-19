@@ -1,4 +1,4 @@
-package com.example.dung.music_59.service;
+package com.example.dung.music_59.service.musicservice;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -25,10 +25,14 @@ public class MusicService extends Service implements MediaManager.OnShowNotifi {
     private static final int REQUEST_CODE = 0;
     private static final int FLAGS_PENDING_INTENT = 0;
     private static final int FORE_GROUND_ID = 1;
+    private static final String EXTRA_PLAY_ACTIVITY = "EXTRA_PLAY_ACTIVITY";
     private final IBinder mIBinder = new MusicBinder();
     private MediaManager mMediaManager;
     private RemoteViews mNotificationView;
     private Notification mNotification;
+
+    private boolean isRunOnBackGround;
+    private MusicServiceListener mChangeStateListener;
 
     @Nullable
     @Override
@@ -38,24 +42,25 @@ public class MusicService extends Service implements MediaManager.OnShowNotifi {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent.getAction() == null) {
-            return START_NOT_STICKY;
+        if (intent !=null && intent.getAction() == null) {
+            return START_STICKY;
         } else {
             switch (intent.getAction()) {
                 case ACTION_NEXT:
                     nextTrack();
+                    mChangeStateListener.listenerChangeState();
                     break;
                 case ACTION_PLAY:
-                    if (isPlaying()) {
-                        pauseTrack();
-                    } else {
-                        playTrack();
-                    }
+                    if (isPlaying()) pauseTrack();
+                    else playTrack();
+                    mChangeStateListener.listenerChangeState();
                     break;
                 case ACTION_PREVIOUS:
                     previousTrack();
+                    mChangeStateListener.listenerChangeState();
                     break;
                 case ACTION_CLOSE:
+                    cancelNotification();
                     break;
             }
         }
@@ -76,6 +81,14 @@ public class MusicService extends Service implements MediaManager.OnShowNotifi {
 
     public void setTrackList(List<Track> tracks) {
         mMediaManager.setTracksList(tracks);
+    }
+
+    public boolean isIsRunBackGround() {
+        return isRunOnBackGround;
+    }
+
+    public void setIsRunBackGround(boolean isRunBackGround) {
+        this.isRunOnBackGround = isRunBackGround;
     }
 
     public void nextTrack() {
@@ -145,6 +158,7 @@ public class MusicService extends Service implements MediaManager.OnShowNotifi {
     @SuppressLint("NewApi")
     public void showNotification() {
         Intent intentMain = new Intent(getApplicationContext(), PlayMusicActivity.class);
+        intentMain.putExtra(EXTRA_PLAY_ACTIVITY, 1234);
         intentMain.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         mNotificationView = new RemoteViews(getPackageName(), R.layout.custom_notification);
@@ -155,6 +169,7 @@ public class MusicService extends Service implements MediaManager.OnShowNotifi {
         setPlayNotifiClick();
         //Button next song
         setNextNotifiClick();
+        setCloseClick();
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
                 (int) System.currentTimeMillis(), intentMain, PendingIntent.FLAG_UPDATE_CURRENT);
         mNotification = new Notification.Builder(this).build();
@@ -189,6 +204,14 @@ public class MusicService extends Service implements MediaManager.OnShowNotifi {
         mNotificationView.setOnClickPendingIntent(R.id.image_notifi_next, pendingIntent);
     }
 
+    private void setCloseClick(){
+        Intent intent = new Intent(this, MusicService.class);
+        intent.setAction(MusicService.ACTION_CLOSE);
+        PendingIntent pendingIntent
+                = PendingIntent.getService(getApplicationContext(), REQUEST_CODE, intent, 0);
+        mNotificationView.setOnClickPendingIntent(R.id.image_notifi_close, pendingIntent);
+    }
+
     public void changeStatePlay() {
         if (mMediaManager.isPlaying()) {
             mNotificationView.setImageViewResource(R.id.image_notifi_pause, R.drawable.ic_pause_black_24dp);
@@ -214,6 +237,20 @@ public class MusicService extends Service implements MediaManager.OnShowNotifi {
 
     public boolean isLoop() {
         return mMediaManager.isLoop();
+    }
+
+    public void cancelNotification() {
+        if (!mMediaManager.isPlaying()) {
+            stopForeground(true);
+        }
+        if (!isRunOnBackGround) {
+            stopSelf();
+        }
+
+    }
+
+    public void addListener(MusicServiceListener listener){
+        mChangeStateListener = listener;
     }
 
     public class MusicBinder extends Binder {

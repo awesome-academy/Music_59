@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 import com.example.dung.music_59.R;
 import com.example.dung.music_59.data.model.Track;
-import com.example.dung.music_59.service.MusicService;
+import com.example.dung.music_59.service.musicservice.MusicService;
 import com.example.dung.music_59.ui.adapter.TracksAdapter;
 import com.example.dung.music_59.ui.playmusic.PlayMusicActivity;
 
