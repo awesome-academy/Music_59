@@ -32,4 +32,12 @@ public class StringUtils {
                 Constants.TRACKS, "?q=", a, Constants.CLIENT_ID);
         return null;
     }
+
+    public static String initDowloadApi(long trackId) {
+        String BASE_URL_DOWLOAD = StringUtils.append(Constants.BASE_URL_STREAM,
+                Constants.TRACKS, "/%s/download?", Constants.CLIENT_ID);
+        return String.format(BASE_URL_DOWLOAD,
+                trackId,
+                BuildConfig.CLIENT_ID);
+    }
 }

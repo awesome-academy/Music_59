@@ -13,16 +13,16 @@ public class TrackTouchHelperCallback extends ItemTouchHelper.Callback {
 
     @Override
     public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-        int dragflag =  ItemTouchHelper.UP|ItemTouchHelper.DOWN;
+        int dragflag = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
         int swipeFlag = ItemTouchHelper.LEFT;
-        return makeMovementFlags(dragflag,swipeFlag);
+        return makeMovementFlags(dragflag, swipeFlag);
     }
 
     @Override
     public boolean onMove(@NonNull RecyclerView recyclerView,
                           @NonNull RecyclerView.ViewHolder viewHolder,
                           @NonNull RecyclerView.ViewHolder viewHolder1) {
-        mListener.onMode(viewHolder.getAdapterPosition(),viewHolder1.getAdapterPosition());
+        mListener.onMode(viewHolder.getAdapterPosition(), viewHolder1.getAdapterPosition());
         return false;
     }
 
