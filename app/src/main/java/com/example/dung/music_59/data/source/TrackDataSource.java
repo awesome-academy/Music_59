@@ -11,12 +11,19 @@ public interface TrackDataSource {
     }
 
     interface OnGetTrackCallBack {
-        void onTrackLoaded(List<Track> tracks);
-        void onFailure();
+        void onTracksLoaded(List<Track> tracks);
+
+        void onFailure(String msg);
+    }
+
+    interface OnGetTrackLocalCallBack {
+        void onGetTrackCompletion(List<Track> tracks);
     }
 
     interface Local {
         void getGenres(OnGetGenresCallBack callBack);
+
+        void getTrackLocal(OnGetTrackLocalCallBack callBack);
     }
 
     interface Remote {

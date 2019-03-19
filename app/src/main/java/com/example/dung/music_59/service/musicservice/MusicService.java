@@ -42,7 +42,7 @@ public class MusicService extends Service implements MediaManager.OnShowNotifi {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent !=null && intent.getAction() == null) {
+        if (intent != null && intent.getAction() == null) {
             return START_STICKY;
         } else {
             switch (intent.getAction()) {
@@ -76,7 +76,6 @@ public class MusicService extends Service implements MediaManager.OnShowNotifi {
     @SuppressLint("NewApi")
     public void playMusic() {
         mMediaManager.create();
-        // showNotification();
     }
 
     public void setTrackList(List<Track> tracks) {
@@ -169,7 +168,7 @@ public class MusicService extends Service implements MediaManager.OnShowNotifi {
         setPlayNotifiClick();
         //Button next song
         setNextNotifiClick();
-        setCloseClick();
+        setCloseNotifiClick();
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
                 (int) System.currentTimeMillis(), intentMain, PendingIntent.FLAG_UPDATE_CURRENT);
         mNotification = new Notification.Builder(this).build();
@@ -204,7 +203,7 @@ public class MusicService extends Service implements MediaManager.OnShowNotifi {
         mNotificationView.setOnClickPendingIntent(R.id.image_notifi_next, pendingIntent);
     }
 
-    private void setCloseClick(){
+    private void setCloseNotifiClick() {
         Intent intent = new Intent(this, MusicService.class);
         intent.setAction(MusicService.ACTION_CLOSE);
         PendingIntent pendingIntent
@@ -249,7 +248,7 @@ public class MusicService extends Service implements MediaManager.OnShowNotifi {
 
     }
 
-    public void addListener(MusicServiceListener listener){
+    public void addListener(MusicServiceListener listener) {
         mChangeStateListener = listener;
     }
 

@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.example.dung.music_59.R;
 import com.example.dung.music_59.data.model.Genre;
 import com.example.dung.music_59.data.model.Track;
@@ -124,6 +125,7 @@ public class GenresActivity extends AppCompatActivity
         mPresenter = new GenresPresenter(this,
                 TrackRepository.getInstance(TrackLocalDataSource.getInstance(getApplicationContext()),
                         TrackRemoteDataSource.getInstance(getApplicationContext())));
+        Glide.with(getApplicationContext()).load(mGenre.getImageId()).into(mImageGenre);
     }
 
     @Override

@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import com.example.dung.music_59.R;
 import com.example.dung.music_59.service.musicservice.MusicService;
 import com.example.dung.music_59.ui.adapter.ViewPagerAdapter;
+import com.example.dung.music_59.ui.home.dowloadfragment.DowloadFragment;
 import com.example.dung.music_59.ui.home.homefragment.HomeFragment;
 
 public class MainActivity extends AppCompatActivity {

@@ -23,4 +23,9 @@ public class TrackLocalDataSource implements TrackDataSource.Local {
     public void getGenres(TrackDataSource.OnGetGenresCallBack callBack) {
         new GenresAsyncTask(mContext, callBack).execute();
     }
+
+    @Override
+    public void getTrackLocal(TrackDataSource.OnGetTrackLocalCallBack callBack) {
+        new LoadTrackLocalAsync(mContext, callBack).execute();
+    }
 }

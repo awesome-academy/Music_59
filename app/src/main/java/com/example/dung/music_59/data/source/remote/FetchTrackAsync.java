@@ -1,9 +1,7 @@
 package com.example.dung.music_59.data.source.remote;
 
-import android.net.Uri;
 import android.os.AsyncTask;
 
-import com.example.dung.music_59.R;
 import com.example.dung.music_59.data.model.Track;
 import com.example.dung.music_59.data.source.TrackDataSource;
 import com.example.dung.music_59.utils.StringUtils;
@@ -101,9 +99,9 @@ public class FetchTrackAsync extends AsyncTask<String, Void, List<Track>> {
     protected void onPostExecute(List<Track> tracks) {
         super.onPostExecute(tracks);
         if (mException == null) {
-            mCallBack.onTrackLoaded(tracks);
+            mCallBack.onTracksLoaded(tracks);
         } else {
-            mCallBack.onFailure();
+            mCallBack.onFailure(mException.getMessage());
         }
     }
 }

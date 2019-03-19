@@ -25,12 +25,12 @@ public class GenresPresenter implements GenresContract.Presenter {
         String url = StringUtils.initGenreApi(GENRE_KIND, genre.getKey(), LIMIT, OFFSET);
         mRepository.getTrackByGenre(url, new TrackDataSource.OnGetTrackCallBack() {
             @Override
-            public void onTrackLoaded(List<Track> tracks) {
+            public void onTracksLoaded(List<Track> tracks) {
                 mView.showTracks(tracks);
             }
 
             @Override
-            public void onFailure() {
+            public void onFailure(String msg) {
 
             }
         });

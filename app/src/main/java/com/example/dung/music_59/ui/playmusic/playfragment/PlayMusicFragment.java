@@ -219,6 +219,9 @@ public class PlayMusicFragment extends Fragment implements View.OnClickListener,
                     if (getActivity() != null) {
                         updateImage();
                     }
+                    if (!mMusicService.getTrack().isDowloadable()) {
+                        mImageDowload.setVisibility(View.INVISIBLE);
+                    }
                 }
                 handler.postDelayed(this, DELAY_UPDATE_TIME_SONG);
             }
